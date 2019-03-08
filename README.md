@@ -180,62 +180,34 @@ overflow 除了 visible 以外的值 (hidden、auto、scroll)
 
 ##### js继承（https://www.cnblogs.com/humin/p/4556820.html）
 
-##### Promise (半成品，无参考意义)
+##### js原型&原型链
 ```
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>Document</title>
-</head>
-<body>
+概念：
+1.__proto__和constructor属性是对象所独有的。
+2.prototype属性是函数所独有的。
+3.但在Js中函数也是一种对象，所以函数也拥有__proto__和constructor属性。
+4.对象（object, function）的__proto__指向 ‘构造该对象的构造函数的原型’。
+5.__proto__属性的作用是当访问一个对象的属性时，如果该对象内部不存在这个属性，那么就会去它（指当前__proto__）的__proto__属性所指向的那个对象（父对象）里找，一路向上，直到__proto__属性的终点null，这条链路叫做 ‘原型链’。
+6.函数的prototype属性指向一个对象，这个对象的用途就是包含所有实例共享的属性和方法，我们把这个对象叫做原型对象。
+7.原型对象也有一个属性，叫constructor，这个属性指回原构造函数。
 
-</body>
-<script>
-
-function Wpormise (fn) {
-	var self = this
-	this.task = []
-	// this.state = 'pending'
-	this.fail = null
-	function resolve (param) {
-		for (var i = 0; i < self.task.length; i++) {
-			self.task[i].call(self, param)
-		}
-	}
-	function reject (param) {
-		self.fail && self.fail.call(self, param)
-	}
-	fn.call(this, resolve, reject)
-}
-Wpormise.prototype = {
-	constructor: Wpormise,
-	then: function (fn) {
-		this.task.push(fn)
-		return this
-	},
-	catch: function (fn) {
-		this.fail = fn
-	}
-}
+例题：
+	// 正常
+	function A() {}
+	console.log(A.prototype) // Object
+	var a = new A()
+	console.log(a.__proto__) // Object
+	console.log(a.__proto__ === A.prototype) // true
 
 
-
-
-new Wpormise(function (resolve, reject) {
-	setTimeout(function () {
-		resolve(1)
-	}, 1000)
-})
-.then(function (res) {
-	console.warn(res)
-})
-.catch(function(err){
-	console.error(err)
-})
-
-</script>
-</html>
+	// 将构造函数的prototype置为null，实例b的__proto__找不到构造函数B的原型，所以顺着原型链找到了Object的prototype
+	function B() {}
+	console.log(B.prototype) // Object
+	B.prototype = null
+	console.log(B.prototype) // null
+	var b = new B()
+	console.log(b.__proto__ === B.prototype) // false
+	console.log(b.__proto__ === Object.prototype) // true
 ```
 ##### ajax
 ```
