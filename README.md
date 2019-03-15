@@ -35,6 +35,23 @@
     合并图层，将页面呈现给用户面前
   }
 ```
+##### 实现add(1)(2)(3) 输出6，add(1)(2)(3)(4)输出10 
+```
+  function add(x) {
+    var sum = x
+    var callback = function(y) {
+      sum += y
+      return callback
+    }
+    callback.toString = function() {
+      return sum
+    }
+    return callback
+  }
+  console.log(add(1)(2)(3))
+  console.log(add(1)(2)(3)(4))
+```
+
 ##### 强缓存和协商缓存
 强缓存
 ```
@@ -208,6 +225,16 @@ overflow 除了 visible 以外的值 (hidden、auto、scroll)
 	var b = new B()
 	console.log(b.__proto__ === B.prototype) // false
 	console.log(b.__proto__ === Object.prototype) // true
+```
+##### 阻止a标签跳转
+```
+  <a href="javascript:;">https://www.baidu.com</a>
+  <a href="javascript: void 0;">https://www.baidu.com</a>
+  // 对于页面中已存在的a标签
+  var a = document.querySelector('a')
+  a.onclick = function(e) {
+    e.preventDefault()
+  }
 ```
 ##### ajax
 ```
