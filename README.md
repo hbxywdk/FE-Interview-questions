@@ -123,6 +123,24 @@ overflow 除了 visible 以外的值 (hidden、auto、scroll)
  obj.__proto__ = Base.prototype;
  Base.call(obj);
 ```
+##### 实现一个 new 操作符
+```
+function New(func) {
+    var res = {};
+    if (func.prototype !== null) {
+        res.__proto__ = func.prototype;
+    }
+    var ret = func.apply(res, Array.prototype.slice.call(arguments, 1));
+    if ((typeof ret === "object" || typeof ret === "function") && ret !== null) {
+        return ret;
+    }
+    return res;
+}
+var obj = New(A, 1, 2);
+// equals to
+var obj = new A(1, 2);
+```
+
 ##### PC端常见兼容问题
 
 ```
