@@ -154,6 +154,7 @@ Function.prototype.myCall = function(context) {
   delete context.fn
   return result
 }
+
 // apply，apply与call的区别在于对参数的处理
 Function.prototype.myApply = function(context) {
   if (typeof this !== 'function') {
@@ -171,6 +172,7 @@ Function.prototype.myApply = function(context) {
   delete context.fn
   return result
 }
+
 // bind
 Function.prototype.myBind = function (context) {
   if (typeof this !== 'function') {
@@ -186,6 +188,19 @@ Function.prototype.myBind = function (context) {
     }
     return _this.apply(context, args.concat(...arguments))
   }
+}
+```
+
+##### 实现 instanceOf
+```
+function instanceOf(left,right) {
+    let proto = left.__proto__
+    let prototype = right.prototype
+    while(true) {
+        if(proto == null) return false
+        if(proto == prototype) return true
+        proto = proto.__proto__
+    }
 }
 ```
 
