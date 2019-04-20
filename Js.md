@@ -115,11 +115,11 @@ Function.prototype.myCall = function(context) {
   if (typeof this !== 'function') {
     throw new TypeError('Error')
   }
-  context = context || window
-  context.fn = this
-  const args = [...arguments].slice(1)
-  const result = context.fn(...args)
-  delete context.fn
+  context = context || window // 执行上下文，没传默认给window
+  context.fn = this // this是要调用的函数 这一步很重要 必须将要执行的函数赋为context的方法
+  const args = [...arguments].slice(1) // 去掉以一个入参
+  const result = context.fn(...args) // 执行
+  delete context.fn // 删掉添加的fn
   return result
 }
 
@@ -170,4 +170,75 @@ function instanceOf(left,right) {
         proto = proto.__proto__
     }
 }
+```
+##### 实现 Promise
+这里列出的是简易版
+```
+    // 定义三个状态
+    const PENDING = 'pending'
+    const RESOLVED = 'resolved'
+    const REJECT = 'rejected'
+    // 定义构造函数
+    function MyPromise(fn){
+        // that不解释了
+        var that = this
+        // 初始状态为pending
+        this.state = PENDING
+        this.value = null
+
+        // 两个回调会在then方法里向里push
+        // 成功回调
+        this.resolveCallback = []
+        // 失败回调
+        this.recjectCallback = []
+
+        // 定义成功方法
+        const resolve = function (value) {
+            if(that.state === PENDING){
+                // 修改为对应状态
+                that.state = RESOLVED
+                // 修改对应状态的 value
+                that.value = value
+                // 执行所有回调
+                that.resolveCallback.map(cb => cb(that.value))
+            }
+        }
+
+        // 定义失败方法
+        const reject = function (value) {
+            if(that.state === PENDING){
+                that.state = REJECT
+                that.value = value
+                that.recjectCallback.map(cb => cb(that.value))
+            }
+        }
+        fn(resolve, reject)
+    }
+    MyPromise.prototype.then = function (success, fail) {
+        // 处理参数校验
+        success = typeof success === 'function' ? success : val => val
+        fail = typeof success === 'function' ? success : err => { throw err }
+        // Promise处于不同状态时做不同处理
+        // 处于pending则向callback添加
+        if(this.state === PENDING){
+            this.resolveCallback.push(success)
+            this.recjectCallback.push(fail)
+        }
+        // 非pending状态,直接调用传入的函数
+        if(this.state === RESOLVED){
+            success(this.value)
+        }
+        if(this.state === REJECT){
+            fail(this.value)
+        }
+    }
+
+    new MyPromise(function(resolve, reject) {
+        setTimeout(() => {
+            resolve('啦啦啦')
+        }, 2000)
+    })
+    .then(function(val) {
+        alert(val)
+    })
 ```
