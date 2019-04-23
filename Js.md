@@ -1,7 +1,238 @@
-##### js继承
+#### 栈、队列
+栈 (stack): 后进先出<br>
+队列 (queue): 后进后出
+
+#### 数组与类数组的区别
+1. 类数组拥有length属性，其它属性（索引）为非负整数（对象中的索引会被当做字符串来处理）。
+2. 不具有数组所具有的方法。
+
+#### 如何将类数组转为数组
+```
+// 第一种
+Array.prototype.slice.call(arrayLike, start)
+// 第二种
+[...arrayLike]
+// 第三种
+Array.from(arrayLike)
+```
+
+#### Event Loop（很重要）
+定义：<br>
+宏任务：script(整体代码)、setTimeout、setInterval、I/O、事件、postMessage、 MessageChannel、setImmediate <br>
+微任务：Promise.then、 MutaionObserver、process.nextTick (Node.js)
+
+##### JS的执行流程：
+
+同步代码执行 <br>
+👇<br>
+遇到`微任务`则将其放入`微任务队列`<br>
+遇到`宏任务`则将其放入`宏任务队列`<br>
+👇<br>
+同步代码执行完毕后，会`优先`执行`微任务队列`中的代码<br>
+👇<br>
+之后才会去执行`宏任务队列`中的代码<br>
+👇<br>
+End
+
+##### 对于async/await的情况，我们将其当做Promise看待
+```
+async function a() {
+  console.log(1)
+  await b();
+  console.log(2)
+}
+
+async function b() {
+  console.log(3)
+}
+a() // 结果 1 3 2
+```
+我们将上面的代码当做Promise
+```
+function a() {
+  console.log(1)
+  new Promise((resolve, reject) =>{
+    resolve(b())
+  })
+  .then(() => {
+    console.log(2)
+  })
+}
+
+function b() {
+  console.log(3)
+}
+
+a() // 结果同样为 1 3 2
+
+```
+##### 我们以下面这道题目为例，来分析
+```
+async function async1() {
+  console.log('async1 start')
+  await async2()
+  console.log('async1 end')
+}
+async function async2() {
+  console.log('async2')
+}
+console.log('script start')
+setTimeout(function() {
+  console.log('setTimeout')
+}, 0)
+async1()
+new Promise(function(resolve) {
+  console.log('promise1')
+  resolve()
+}).then(function() {
+  console.log('promise2')
+})
+console.log('script end')
+
+```
+1. 首先打印 `script start`
+2. 接着执行到setTimeout定时器，它内部的log被加入宏队列，`此时的宏队列['setTimeout']`
+3. 执行函数async1，直接会打印 `async1 start`，然后我们会执行到 await async2(),其内部的同步代码会直接执行，故打印 `async2`，之后await async2()后面的 async1 end 被加入微队列，`此时的微队列['async1 end']`
+4. 继续，我们到了Promise，内部同步代码直接执行，打印 `promise1`,then中的代码，被加入微队列，`此时的微队列['async1 end', promise2]`
+5. 最后一行，打印 `script end`
+6. 回过头来执行微任务，打印`async1 end`和`promise2`
+7. 最后执行宏队列，打印`setTimeout`
+
+script start、async1 start、async2、promise1、script end、async1 end、promise2、setTimeout
+
+> 这里不同的浏览器、相同浏览器的不同版本、Node.js中可能会有不同的结果，主要集中在微任务`async1 end`和`promise2`的顺序上，我们不需要管这些，只需要记住这一种流程即可。
+
+#### 函数柯里化
+柯里化（Currying），又称部分求值（Partial Evaluation），是把接受多个参数的函数变换成接受一个单一参数（最初函数的第一个参数）的函数，并且返回接受余下的参数而且返回结果的新函数的技术.
+
+通用实现
+```
+function currying(fn, ...rest1) {
+  return function(...rest2) {
+    return fn.apply(null, rest1.concat(rest2))
+  }
+}
+function sayHello(name, age, fruit) {
+  console.log(console.log(`我叫 ${name},我 ${age} 岁了, 我喜欢吃 ${fruit}`))
+}
+
+const curryingShowMsg1 = currying(sayHello, '小明')
+curryingShowMsg1(22, '苹果')            // 我叫 小明,我 22 岁了, 我喜欢吃 苹果
+const curryingShowMsg2 = currying(sayHello, '小衰', 20)
+curryingShowMsg2('西瓜')               // 我叫 小衰,我 20 岁了, 我喜欢吃 西瓜
+
+参考： https://cloud.tencent.com/developer/article/1356699
+
+```
+
+#### 实现add(1)(2)(3) 输出6，add(1)(2)(3)(4)输出10 
+隐式转换会触发function的toString方法与valueOf方法,且两个方法都存在的话只会触发valueOf
+```
+  function add(x) {
+    var sum = x
+    var callback = function(y) {
+      sum += y
+      return callback
+    }
+    callback.toString = function() {
+      return sum
+    }
+    return callback // 隐式转换
+  }
+  console.log(add(1)(2)(3))
+  console.log(add(1)(2)(3)(4))
+```
+#### 如果要实现一个fn，使得其可以在这些：fn(1)(2)(3)(4)，fn(1, 2)(3, 4)，fn(1)(2, 3)(4)等情况下都可以处理[1, 2, 3, 4]
+这里不太好描述，就是要讲不管怎么传参，都要拿到统一的处理结果：[1, 2, 3, 4]
+
+这里就要用到函数柯里化
+```
+function curry(fn, args = []) {
+  return function () {
+    let mergeArgs = [...args, ...arguments]
+    // 以函数的形参个数为判断标准，传入的参数够数了，则执行fn
+    if (mergeArgs.length < fn.length) {
+      return curry.call(this, fn, mergeArgs)
+    } else {
+      return fn.apply(this, mergeArgs)
+    }
+  }
+} 
+function fnc(a, b, c, d) {
+  console.log('参数', [...arguments])
+}
+var fn = curry(fnc)
+
+console.log(fn(1)(2)(3)(4)) // 参数 (4) [1, 2, 3, 4]
+console.log(fn(1, 2)(3, 4)) // 参数 (4) [1, 2, 3, 4]
+console.log(fn(1)(2, 3)(4)) // 参数 (4) [1, 2, 3, 4]
+```
+#### 如何获得函数形参与实参的个数
+```
+function test(a, b ,c) {
+  console.log('实参的个数', arguments.length) // 2
+}
+test(1, 2)
+console.log('形参的个数', test.length) // 3
+console.log('获取函数名称', test.name) // 'test'
+```
+#### 为什么 0.1 + 0.2 != 0.3
+因为在进制转换和进阶运算的过程中出现精度损失，不详细列了，可自行查找。
+
+#### 判断两个数组是否相等
+这里给出方式仅适用于数组的元素不是对象的情况
+
+想要考虑全面可以看下 `Underscore.js`中`isEqual`方法的源码
+```
+function arrayEqual(arr1, arr2) {
+  for (let i = 0; i < arr1.length; i++) {
+    if (arr1[i] !== arr2[i]) {
+      return false
+    }
+  }
+  return true
+}
+var arr1 = [1, '1', 2]
+var arr2 = [1, '1', 2]
+
+arrayEqual(arr1, arr2)
+```
+
+#### 如何对比两个对象相等
+这里给出方式仅适用于对象的属性不是对象的情况
+
+想要考虑全面可以看下 `Underscore.js`中`isEqual`方法的源码
+```
+function objectEqual(a, b) {
+  // 获取两个对象所有属性
+  var aProps = Object.getOwnPropertyNames(a)
+  var bProps = Object.getOwnPropertyNames(b)
+  // 如果属性个数都不相同，直接返回false
+  if (aProps.length != bProps.length) {
+    return false
+  }
+
+  // 遍历第一个对象的属性名，对比第二个对象相应的属性，如果不一样则返回false
+  for (var i = 0; i < aProps.length; i++) {
+    var propName = aProps[i]
+    if (a[propName] !== b[propName]) {
+      return false
+    }
+  }
+
+  return true
+}
+
+var obj1 = { a: 1, b: 2 }
+var obj2 = { a: 1, b: 2 }
+
+console.log(objectEqual(obj1, obj2)) // true
+```
+
+#### js继承
 [JS实现继承的几种方式](https://www.cnblogs.com/humin/p/4556820.html)
 
-##### js原型&原型链
+#### js原型&原型链
 ```
 概念：
 1.__proto__和constructor属性是对象所独有的。
@@ -30,24 +261,8 @@
 	console.log(b.__proto__ === Object.prototype) // true
 ```
 
-##### 实现add(1)(2)(3) 输出6，add(1)(2)(3)(4)输出10 
-```
-  function add(x) {
-    var sum = x
-    var callback = function(y) {
-      sum += y
-      return callback
-    }
-    callback.toString = function() {
-      return sum
-    }
-    return callback
-  }
-  console.log(add(1)(2)(3))
-  console.log(add(1)(2)(3)(4))
-```
 
-##### ajax
+#### ajax
 ```
 // GET
 //步骤一:创建异步对象
@@ -80,7 +295,7 @@ xhr.onreadystatechange = function () {
 };
 ```
 
-##### new操作符具体干了什么
+#### new操作符具体干了什么
 ```
  1、创建一个空对象，并且 this 变量引用该对象，同时还继承了该函数的原型。
  2、属性和方法被加入到 this 引用的对象中。
@@ -90,7 +305,7 @@ xhr.onreadystatechange = function () {
  Base.call(obj);
 ```
 
-##### 实现一个 new 操作符
+#### 实现一个 new 操作符
 ```
 function New(func) {
     var res = {};
@@ -108,7 +323,7 @@ var obj = New(A, 1, 2);
 var obj = new A(1, 2);
 ```
 
-##### 实现call、apply 与 bind
+#### 实现call、apply 与 bind
 ```
 // call
 Function.prototype.myCall = function(context) {
@@ -159,7 +374,7 @@ Function.prototype.myBind = function (context) {
 }
 ```
 
-##### 实现 instanceOf
+#### 实现 instanceOf
 ```
 function instanceOf(left,right) {
     let proto = left.__proto__
@@ -171,7 +386,8 @@ function instanceOf(left,right) {
     }
 }
 ```
-##### 实现 Promise
+
+#### 实现 Promise
 这里列出的是简易版
 ```
     // 定义三个状态

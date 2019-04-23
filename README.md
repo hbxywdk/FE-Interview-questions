@@ -40,6 +40,7 @@
 - webpack如何优化编译速度
 - 事件循环机制，以及在node和浏览器环境中它的区别
 
+#### Object.prototype.toString.call([])的结果为什么是"[object Array]"？
 
 ##### dns解析流程
 https://blog.csdn.net/YZS_L_H/article/details/69751353
