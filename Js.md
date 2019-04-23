@@ -2,9 +2,13 @@
 栈 (stack): 后进先出<br>
 队列 (queue): 后进后出
 
+
+
 #### 数组与类数组的区别
 1. 类数组拥有length属性，其它属性（索引）为非负整数（对象中的索引会被当做字符串来处理）。
 2. 不具有数组所具有的方法。
+
+
 
 #### 如何将类数组转为数组
 ```
@@ -16,13 +20,13 @@ Array.prototype.slice.call(arrayLike, start)
 Array.from(arrayLike)
 ```
 
-#### Event Loop（很重要）
+
+#### Event Loop（事件循环机制）
 定义：<br>
 宏任务：script(整体代码)、setTimeout、setInterval、I/O、事件、postMessage、 MessageChannel、setImmediate <br>
 微任务：Promise.then、 MutaionObserver、process.nextTick (Node.js)
 
 ##### JS的执行流程：
-
 同步代码执行 <br>
 👇<br>
 遇到`微任务`则将其放入`微任务队列`<br>
@@ -38,10 +42,9 @@ End
 ```
 async function a() {
   console.log(1)
-  await b();
+  await b()
   console.log(2)
 }
-
 async function b() {
   console.log(3)
 }
@@ -58,14 +61,13 @@ function a() {
     console.log(2)
   })
 }
-
 function b() {
   console.log(3)
 }
-
 a() // 结果同样为 1 3 2
 
 ```
+
 ##### 我们以下面这道题目为例，来分析
 ```
 async function async1() {
@@ -102,6 +104,7 @@ script start、async1 start、async2、promise1、script end、async1 end、prom
 
 > 这里不同的浏览器、相同浏览器的不同版本、Node.js中可能会有不同的结果，主要集中在微任务`async1 end`和`promise2`的顺序上，我们不需要管这些，只需要记住这一种流程即可。
 
+
 #### 函数柯里化
 柯里化（Currying），又称部分求值（Partial Evaluation），是把接受多个参数的函数变换成接受一个单一参数（最初函数的第一个参数）的函数，并且返回接受余下的参数而且返回结果的新函数的技术.
 
@@ -125,6 +128,7 @@ curryingShowMsg2('西瓜')               // 我叫 小衰,我 20 岁了, 我喜�
 
 ```
 
+
 #### 实现add(1)(2)(3) 输出6，add(1)(2)(3)(4)输出10 
 隐式转换会触发function的toString方法与valueOf方法,且两个方法都存在的话只会触发valueOf
 ```
@@ -142,6 +146,8 @@ curryingShowMsg2('西瓜')               // 我叫 小衰,我 20 岁了, 我喜�
   console.log(add(1)(2)(3))
   console.log(add(1)(2)(3)(4))
 ```
+
+
 #### 如果要实现一个fn，使得其可以在这些：fn(1)(2)(3)(4)，fn(1, 2)(3, 4)，fn(1)(2, 3)(4)等情况下都可以处理[1, 2, 3, 4]
 这里不太好描述，就是要讲不管怎么传参，都要拿到统一的处理结果：[1, 2, 3, 4]
 
@@ -167,6 +173,8 @@ console.log(fn(1)(2)(3)(4)) // 参数 (4) [1, 2, 3, 4]
 console.log(fn(1, 2)(3, 4)) // 参数 (4) [1, 2, 3, 4]
 console.log(fn(1)(2, 3)(4)) // 参数 (4) [1, 2, 3, 4]
 ```
+
+
 #### 如何获得函数形参与实参的个数
 ```
 function test(a, b ,c) {
@@ -176,8 +184,11 @@ test(1, 2)
 console.log('形参的个数', test.length) // 3
 console.log('获取函数名称', test.name) // 'test'
 ```
+
+
 #### 为什么 0.1 + 0.2 != 0.3
 因为在进制转换和进阶运算的过程中出现精度损失，不详细列了，可自行查找。
+
 
 #### 判断两个数组是否相等
 这里给出方式仅适用于数组的元素不是对象的情况
@@ -229,8 +240,20 @@ var obj2 = { a: 1, b: 2 }
 console.log(objectEqual(obj1, obj2)) // true
 ```
 
+
+#### Object.prototype.toString.call([])的结果为什么是"[object Array]"？
+先说原因：
+1. 获取this对象的[[Class]]属性值
+2. 拼接字符串并返回，即：`"[object " + Class名 + "]"` 
+
+`Object.prototype.toString.call()只能用于判断原生对象哦，自定义Class请使用instanceof判断`
+
+详细可看：https://www.jianshu.com/p/e4237ebb1cf0
+
+
 #### js继承
 [JS实现继承的几种方式](https://www.cnblogs.com/humin/p/4556820.html)
+
 
 #### js原型&原型链
 ```

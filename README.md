@@ -26,7 +26,7 @@
 
 ### [设计模式](./设计模式.md)
 
-### [通信协议](./通信协议.md)
+### [通信协议](./通信协议/通信协议.md)
 
 ### [安全](./安全.md)
 
@@ -38,23 +38,17 @@
 - webpack的plugins和loaders的实现原理
 - webpack 热更新原理
 - webpack如何优化编译速度
-- 事件循环机制，以及在node和浏览器环境中它的区别
 
-#### Object.prototype.toString.call([])的结果为什么是"[object Array]"？
 
-##### dns解析流程
+##### 简述DNS解析流程
+1. 首先在本地计算机的缓存中查找，找到则使用本地。没找到，则向DNS服务器发起查询请求。
+2. 客户机将域名查询请求发送到本地DNS服务器，本地DNS服务器首先在该服务器管理的区域的记录中查找，如果找到该记录，则利用此记录进行解析；如果没有区域信息可以满足查询要求，服务器在本地的缓存中查找。
+3. 如果本地服务器不能在本地找到客户机查询的信息，将客户机请求发送到根域名DNS服务器。
+4. 根域名服务器负责解析客户机请求的根域部分，它将包含下一级域名信息的DNS服务器地址返回给客户机的DNS服务器地址。
+
+tips：DNS通常使用UDP协议
+
 https://blog.csdn.net/YZS_L_H/article/details/69751353
-
-
-##### tcp如何保证可靠性
-校验和、序列号、确认应答、超时重传、连接管理、流量控制、拥塞控制
-https://www.baidu.com/link?url=_pqNIV1D1oitXiC3xnIjbH5uCmf5OxZPk7VmpwrlhZXdsYaZRy6Kf1_CX6oe41RN2ow9O_SND4ipmPVdx1yW4aq-JaYAlYemxwKsuxqFf-a&wd=&eqid=f7007ccc00102847000000065cbd2b66
-
-
-
-##### 三次握手和四次挥手
-https://juejin.im/post/5cb93204f265da039955d770
-
 
 
 ##### 发布订阅模式和观察者模式的异同
