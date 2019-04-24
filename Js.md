@@ -104,6 +104,9 @@ script start、async1 start、async2、promise1、script end、async1 end、prom
 
 > 这里不同的浏览器、相同浏览器的不同版本、Node.js中可能会有不同的结果，主要集中在微任务`async1 end`和`promise2`的顺序上，我们不需要管这些，只需要记住这一种流程即可。
 
+#### 浏览器 与 Node.js 环境下 Event Loop 的区别
+可以参靠这篇文章：https://www.jianshu.com/p/b221e6e36dcb<br>
+需要注意的是，`Node.js 11版本之后， Event Loop 与浏览器已没有区别`。
 
 #### 函数柯里化
 柯里化（Currying），又称部分求值（Partial Evaluation），是把接受多个参数的函数变换成接受一个单一参数（最初函数的第一个参数）的函数，并且返回接受余下的参数而且返回结果的新函数的技术.
