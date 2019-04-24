@@ -68,4 +68,9 @@
 ```
 8.Retina屏的1px边框
 解决方法：设置1px的div，将其缩放0.5。
+
+9.iOS上:hover 无效
+解决方法: ios上的webkit浏览器，只有a标签才可以使hover生效，其他标签如div，需要用javascript绑定点击事件才可以。
+https://bbs.csdn.net/topics/391812729
+https://www.cnblogs.com/davidcdh/p/7878338.html
 ```
