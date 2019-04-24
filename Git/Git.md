@@ -1,3 +1,6 @@
+### git rebase的作用
+https://blog.csdn.net/erice_e/article/details/80913192
+
 ### 使用git reflog恢复已删除提交
 假设有三次提交
 
