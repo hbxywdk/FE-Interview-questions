@@ -1,9 +1,3 @@
-#### 栈、队列
-栈 (stack): 后进先出<br>
-队列 (queue): 后进后出
-
-
-
 #### 数组与类数组的区别
 1. 类数组拥有length属性，其它属性（索引）为非负整数（对象中的索引会被当做字符串来处理）。
 2. 不具有数组所具有的方法。
@@ -19,6 +13,12 @@ Array.prototype.slice.call(arrayLike, start)
 // 第三种
 Array.from(arrayLike)
 ```
+
+
+
+
+
+
 
 
 #### Event Loop（事件循环机制）
@@ -191,6 +191,49 @@ console.log('获取函数名称', test.name) // 'test'
 
 #### 为什么 0.1 + 0.2 != 0.3
 因为在进制转换和进阶运算的过程中出现精度损失，不详细列了，可自行查找。
+如何处理精度问题？这里有这样一个值： Number.EPSILON 它代表的是Js的最小精度值，
+以此我们封装一个函数即可解决：
+```
+function isNumEqual(num1, num2) {
+  return (Math.abs(num1 - num2) <= Number.EPSILON)
+}
+isNumEqual(0.1 + 0.2, 0.3) // true
+isNumEqual(0.3 + 0.6, 0.9) // true
+```
+#### 对ES6中async函数的简单理解
+`async函数` 是 `Generator函数` 的语法糖。<br>
+async函数的返回值是 Promise 对象，这比 Generator 函数的返回值是 Iterator 对象方便多了。可以用then方法指定下一步的操作。<br>
+async函数完全可以看作多个异步操作，包装成的一个 Promise 对象，而await命令就是内部then命令的语法糖。<br>
+有这样一段代码（取自阮一峰ES6入门）：
+```
+const fs = require('fs')
+const readFile = function (fileName) {
+  return new Promise(function (resolve, reject) {
+    fs.readFile(fileName, function(error, data) {
+      if (error) return reject(error)
+      resolve(data)
+    })
+  })
+}
+
+const gen = function* () {
+  const f1 = yield readFile('/etc/fstab')
+  const f2 = yield readFile('/etc/shells')
+  console.log(f1.toString())
+  console.log(f2.toString())
+}
+```
+这段Generator函数写成async函数就是这样：
+```
+const asyncReadFile = async function () {
+  const f1 = await readFile('/etc/fstab')
+  const f2 = await readFile('/etc/shells')
+  console.log(f1.toString())
+  console.log(f2.toString())
+};
+```
+
+
 
 #### V8垃圾回收机制
 [V8垃圾回收机制](https://hbxywdk.github.io/2019/04/24/V8%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6/)
