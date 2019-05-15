@@ -108,6 +108,26 @@ script start、async1 start、async2、promise1、script end、async1 end、prom
 可以参靠这篇文章：https://www.jianshu.com/p/b221e6e36dcb<br>
 需要注意的是，`Node.js 11版本之后， Event Loop 与浏览器已没有区别`。
 
+#### 实现一个函数，可以保留小数点后指定位数，且不能出现 1.20 这样的情况
+（不能用toFixed，某些情况下toFixed会产生多余的0）
+```
+/**
+ * 保留指定位数的小数，支持正负数，会去除结尾的0
+ * exp: saveDecimal(5.12345, 4) 保留四位 结果为 5.1235
+ * @param {Number} value 数值
+ * @param {Nmber} num 要保留几位小数
+ */
+export function saveDecimal(value, num) {
+  if (value === undefined || value === null) return
+  if ( typeof num !== 'number') return
+  var value = parseFloat(value)
+  var count = 10**num
+  value = Math.round(value * count) / count
+  return value
+}
+```
+
+
 #### 函数柯里化
 柯里化（Currying），又称部分求值（Partial Evaluation），是把接受多个参数的函数变换成接受一个单一参数（最初函数的第一个参数）的函数，并且返回接受余下的参数而且返回结果的新函数的技术.
 
