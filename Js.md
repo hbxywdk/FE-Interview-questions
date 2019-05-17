@@ -200,6 +200,13 @@ function isNumEqual(num1, num2) {
 isNumEqual(0.1 + 0.2, 0.3) // true
 isNumEqual(0.3 + 0.6, 0.9) // true
 ```
+
+#### 如何理解函数也是对象这句话？直接定义具名函数与将一个匿名函数赋值给一个变量有什么区别？
+函数也是一个对象，通常的函数的写法只是一种语法糖，实际都会被转换为 new Function() 形式。[MDN Function](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Function)
+
+具名函数在js运行之前就会整个被提升到顶部，故即使函数写在代码最后，也可以在第一行直接调用；
+而将一个匿名函数赋值给一个变量只会讲变量名提升，函数并不会提升，在匿名函数定义之前调用则会报错。
+
 #### 对ES6中async函数的简单理解
 `async函数` 是 `Generator函数` 的语法糖。<br>
 async函数的返回值是 Promise 对象，这比 Generator 函数的返回值是 Iterator 对象方便多了。可以用then方法指定下一步的操作。<br>
