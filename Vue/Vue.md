@@ -21,7 +21,54 @@ Proxy就是解决了Object.defineProperty的一系列缺点。
 
 Vue3使用Proxy后，将会对Vue的性能带来巨大的提升！
 
+#### Vue 数据改变就会更新吗？ Vue会在何时触发更新？
+不会，默认是异步更新的，这里放Watcher的update部分代码：
+```
+  update () {
+    /* istanbul ignore else */
+    if (this.lazy) {
+      this.dirty = true
+    } else if (this.sync) {
+      // 同步更新的直接更新
+      this.run()
+    } else {
+      // 默认异步更新，使用 queueWatcher 将wather推入队列中，下一个tick时调用
+      queueWatcher(this)
+    }
+  }
+```
+然后看 queueWatcher 方法：
+```
+export function queueWatcher (watcher: Watcher) {
+  const id = watcher.id
+  // 这里判断同一个Watcher只会被推入一次
+  if (has[id] == null) {
+    has[id] = true
+    if (!flushing) {
+      queue.push(watcher)
+    } else {
+      // if already flushing, splice the watcher based on its id
+      // if already past its id, it will be run next immediately.
+      let i = queue.length - 1
+      while (i > index && queue[i].id > watcher.id) {
+        i--
+      }
+      queue.splice(i + 1, 0, watcher)
+    }
+    // queue the flush
+    if (!waiting) {
+      waiting = true
 
+      if (process.env.NODE_ENV !== 'production' && !config.async) {
+        flushSchedulerQueue()
+        return
+      }
+      // 下一次Tick更新
+      nextTick(flushSchedulerQueue)
+    }
+  }
+}
+```
 
 ##### Vue的nextTick作用与原理
 作用：Vue的DOM更新是异步的，nextTick可以让我们在下次DOM更新后，拿到更新后的DOM。
