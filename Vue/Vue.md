@@ -1,12 +1,13 @@
 
-##### Vue和React的区别、优缺点
+#### Vue和React的区别、优缺点
 1. Vue使用支持双向绑定，相对于React要方便许多。
 2. React首拍卖行JSX，Vue默认使用template，不过后面也加入的JSX语法。
 3. 学习成本Vue要比React低很多。
 
+#### Vue wtach 与 computed 怎么实现的？
+详见[这里](https://hbxywdk.github.io/2019/05/14/%E5%AD%A6%E4%B9%A0Vue%E6%BA%90%E7%A0%8112-Vue%E4%B8%AD%E7%9A%84watch%E4%B8%8Ecomputed/)
 
-
-##### Vue3使用Proxy解决了哪些问题
+#### Vue3使用Proxy解决了哪些问题
 Vue1、2使用的都是Object.defineProperty，它有如下缺点：
 1. 无法监听es6的Set、WeakSet、Map、WeakMap的变化；
 2. 无法监听Class类型的数据；
@@ -70,7 +71,7 @@ export function queueWatcher (watcher: Watcher) {
 }
 ```
 
-##### Vue的nextTick作用与原理
+#### Vue的nextTick作用与原理
 作用：Vue的DOM更新是异步的，nextTick可以让我们在下次DOM更新后，拿到更新后的DOM。
 
 原理（Vue版本2.6.8）： 
